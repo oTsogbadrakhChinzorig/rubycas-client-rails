@@ -27,6 +27,10 @@ module RubyCAS
         @@log = @@client.log
       end
       
+      def before(controller)
+        self.filter controller
+      end      
+      
       def filter(controller)
         raise "Cannot use the CASClient filter because it has not yet been configured." if config.nil?
         
@@ -375,7 +379,7 @@ module RubyCAS
         
         params = controller.params.dup
         params.delete(:ticket)
-        service_url = controller.url_for(params)
+        service_url = controller.url_for(params.permit(:action, :controller))
         log.debug("Guessed service url: #{service_url.inspect}")
         return service_url
       end
